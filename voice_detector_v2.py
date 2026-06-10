@@ -98,7 +98,7 @@ ECHO_COOLDOWN_SEC          = 0.40    # seconds to ignore audio after TTS stops
 # WHISPER
 # ─────────────────────────────────────────
 
-model = whisper.load_model("models/base.pt")
+model = whisper.load_model("base")
 
 
 # ─────────────────────────────────────────

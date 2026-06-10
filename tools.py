@@ -30,20 +30,22 @@ TOOL_MAP = {
     
 }
 killers=[]
-try:
-    for i in os.listdir(TOOLS_PATH):
-        try:
-            print(f"loading tool {i}...")
-            temp_tool=importlib.import_module(f"{TOOLS_PATH}.{i}.main")
-            temp_tool.init()
-            temp_tool.add_tool(TOOL_MAP)
-            killers.append(temp_tool.kill)
-            print(f"tool {i} successfully loaded")
-        except:
-            print(f"failed to load tool {i}")
-            continue
-except:
-    pass
+def add_all_tools(args):
+    try:
+        for i in os.listdir(TOOLS_PATH):
+            try:
+                print(f"loading tool {i}...")
+                temp_tool=importlib.import_module(f"{TOOLS_PATH}.{i}.main")
+                temp_tool.init(args)
+                temp_tool.add_tool(TOOL_MAP)
+                killers.append(temp_tool.kill)
+                print(f"tool {i} successfully loaded")
+            except Exception as e:
+                print(e)
+                print(f"failed to load tool {i}")
+                continue
+    except:
+        pass
 
 def format_tools_for_prompt(tool_map):
     """Format tools list for inclusion in system prompt"""

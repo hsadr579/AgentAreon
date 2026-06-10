@@ -37,7 +37,7 @@ def schedule_runner():
                 fp.close()
 
 
-def init():
+def init(args):
     global schedules,schedule_tread
     try:
         fp=open(SCHEDULES_FILE,'r')

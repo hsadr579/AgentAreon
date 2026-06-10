@@ -5,7 +5,6 @@ import os
 import curses
 import math
 import textwrap
-import threading  # Added for thread-safe status updates
 from tools import *
 from system_prompt import *
 from speaker_v3 import *
@@ -13,9 +12,10 @@ import voice_detector_v2 as vd
 import chars
 import colorizer
 
+
 CONFIG_FILE="config.json"
 AI_NAME = "Agent Areon"
-USER_NAME="User"
+USER_NAME="Diagrammer The First"
 USER_SYSPROMPT=""
 SYNC_INSTRUCTIONS = "sync_instructions.json"
 HIST_FILE="history.json"
@@ -26,29 +26,8 @@ URL="http://localhost:1234/v1"
 API_KEY="lm-studio"
 MODEL="Gemma-4-E4B-Uncensored-HauhauCS-Aggressive-IQ4_NL"
 TEMPERATURE=0.3
-
-# ==========================================
-# THREAD-SAFE GLOBAL STATUS BAR STATE FOR TOOLS
-# ==========================================
-_STATUS_BAR_TEXT = ""
-_status_lock = threading.Lock()
-
-def set_status(text):
-    """
-    Global helper function for external tools to update the terminal footer.
-    Usage in tools: from main import set_status; set_status("Playing: Song Title")
-    """
-    global _STATUS_BAR_TEXT
-    with _status_lock:
-        _STATUS_BAR_TEXT = str(text).strip()
-
-def clear_status():
-    """Resets the status bar text back to default idle status."""
-    set_status("")
-TOOL_ARGS={"set_status":set_status,"clear_status":clear_status}
-add_all_tools(TOOL_ARGS)
-
 try:
+    
     with open(CONFIG_FILE, 'r') as fp:
         configs = json.load(fp)
         if "ai_name" in configs:AI_NAME=configs["ai_name"]
@@ -58,6 +37,8 @@ try:
         if "api_key" in configs:API_KEY=configs["api_key"]
         if "model" in configs:MODEL=configs["model"]
         if "temperature" in configs:TEMPERATURE=configs["temperature"]
+
+
 except Exception:
     pass
 
@@ -69,7 +50,8 @@ def construct_system_prompt():
                                                     voice=VOICE_NAME,voice_personality=VOICE_PERSONALITY)
 
 construct_system_prompt()
-STARTING_MESSAGE = f"{AI_NAME} Awakened\n"
+#print(SYSTEM_PROMPT)
+STARTING_MESSAGE = f"{AI_NAME} Awakened\n\n"
 
 # ======================
 # Curses UI Helper Functions
@@ -99,17 +81,15 @@ def wrap_segments(tag, tag_color, text, text_color, width):
             result_segments.append(seg)
             
     return result_segments
-
 code_boxes=[]
-
-def redraw(stdscr, chat_log, current_input, streaming_text="", is_calling_tool=False, thinking=False, ai_name="AI", input_tag="[you] > ", input_color=2):
-    """Draws the chat UI: history, divider, input field, and a bottom status bar footer."""
+def redraw(stdscr, chat_log, current_input, streaming_text="", is_calling_tool=False,thinking=False, ai_name="AI", input_tag="[you]: ", input_color=2):
+    """Draws the chat UI: history at the top, divider, and input field at the bottom."""
     global SCROLL_OFFSET
     
     stdscr.erase()
     max_y, max_x = stdscr.getmaxyx()
 
-    if max_x < 15 or max_y < 6:  # Shifted min height boundary requirement for the extra status bar row
+    if max_x < 15 or max_y < 5:
         stdscr.addstr(0, 0, "Terminal too small!")
         stdscr.refresh()
         return
@@ -117,13 +97,11 @@ def redraw(stdscr, chat_log, current_input, streaming_text="", is_calling_tool=F
     # 1. Calculate Input Area Dimensions
     input_lines = wrap_segments(input_tag, input_color, current_input, 0, max_x - 1)
     
-    # We allocate space up to max_y - 2 for input area to keep max_y - 1 free for status bar
-    max_input_h = max(1, (max_y - 1) // 2)
+    max_input_h = max(1, max_y // 2)
     input_h = len(input_lines)
     visible_input_h = min(input_h, max_input_h)
     
-    # Calculate divider keeping room for input elements and the 1-row status bar footer
-    divider_y = max_y - 3 - visible_input_h
+    divider_y = max_y - 1 - visible_input_h
 
     # 2. Gather Chat History Lines
     lines_to_draw = []
@@ -178,6 +156,7 @@ def redraw(stdscr, chat_log, current_input, streaming_text="", is_calling_tool=F
         x = 0
         colorizer.reset_line()
        
+        
         for text, color in segs:
             box_num=0
             code_box=False  
@@ -188,7 +167,8 @@ def redraw(stdscr, chat_log, current_input, streaming_text="", is_calling_tool=F
             
             if not text: continue
             try:
-                if "[CODE_BOX]" in text:
+                
+                if "[CODE_BOX]"  in text:
                     stdscr.hline(y, 0, '=', max_x)
                     x+=max_x
                     found=False
@@ -196,13 +176,16 @@ def redraw(stdscr, chat_log, current_input, streaming_text="", is_calling_tool=F
                         if y+start_idx ==i[0] :
                             found=True
                             break
+                    
                     if not found:code_boxes.append([y+start_idx,math.inf])
+                    
                     continue
                 if "[CODE_BOX_END]" in text :
                     stdscr.hline(y, 0, '=', max_x)
                     x+=max_x
                     if len(code_boxes)>0:
                         code_boxes[box_num][1]=y+start_idx
+                    
                     continue
                 if code_box:
                     word=""
@@ -214,6 +197,7 @@ def redraw(stdscr, chat_log, current_input, streaming_text="", is_calling_tool=F
                                 char=pre_char+char
                                 pre_char=''
                             else:
+                            
                                 for i in chars.double_char:
                                     r=r or (char in i)
 
@@ -238,6 +222,7 @@ def redraw(stdscr, chat_log, current_input, streaming_text="", is_calling_tool=F
                         pre_char=''   
                     continue
                 elif color == 0:
+                    
                     stdscr.addstr(y, x, text)
                 else:
                     stdscr.addstr(y, x, text, curses.color_pair(color))
@@ -249,6 +234,7 @@ def redraw(stdscr, chat_log, current_input, streaming_text="", is_calling_tool=F
     try:
         if divider_y >= 0:
             stdscr.hline(divider_y, 0, curses.ACS_HLINE, max_x)
+            # Add visual indicator if scrolled up
             if SCROLL_OFFSET > 0:
                 indicator = f" [SCROLLED UP] (Press DOWN/PgDn) "
                 if max_x > len(indicator) + 2:
@@ -261,7 +247,7 @@ def redraw(stdscr, chat_log, current_input, streaming_text="", is_calling_tool=F
     for y, segs in enumerate(input_lines[start_input_idx:]):
         x = 0
         draw_y = divider_y + 1 + y
-        if 0 <= draw_y < max_y - 2:  # Protect final row boundary from layout overflow
+        if 0 <= draw_y < max_y:
             for text, color in segs:
                 if not text: continue
                 try:
@@ -273,36 +259,12 @@ def redraw(stdscr, chat_log, current_input, streaming_text="", is_calling_tool=F
                 except curses.error:
                     pass
 
-    # 7. Draw Dynamic Status Bar on Row (max_y - 1)
-    try:
-        current_time = time.strftime("%H:%M:%S")
-        with _status_lock:
-            status_text = _STATUS_BAR_TEXT
-
-        if status_text:
-            status_msg = f"{status_text}"
-        else:
-            status_msg = f""
-
-        # Calculate available width for text to prevent window overflow (max_x - 1)
-        target_width = max_x - 1
-        time_len = len(current_time)
-        msg_width = target_width - time_len
-
-        # Truncate the message if it's too long, then left-pad the space before the time
-        status_line = f" {status_msg[:msg_width-1]:<{msg_width-1}}{current_time} "
-
-        # Draw the horizontal separator and the status bar
-        stdscr.hline(max_y - 2, 0, curses.ACS_HLINE, max_x)
-        stdscr.addstr(max_y - 1, 0, status_line, curses.color_pair(3) | curses.A_REVERSE)
-        
-    except curses.error:
-        pass
-
     stdscr.refresh()
 
 def get_user_input_and_sync(stdscr, chat_log):
-    """Non-blocking input loop. Supports multiline typing, pasting, voice listening, and scrolling."""
+    """
+    Non-blocking input loop. Supports multiline typing, pasting, voice listening, and scrolling.
+    """
     global SCROLL_OFFSET
     current_input = ""
     
@@ -403,15 +365,18 @@ def get_user_input_and_sync(stdscr, chat_log):
 # Main Curses Application
 # ======================
 def sync_hist(hist):
+    
     fp=open(HIST_FILE,"w")
     json.dump(hist,fp)
     fp.close      
+    
 
 def main(stdscr):
     global SCROLL_OFFSET,VOICE_DETECTION
     # Initialize Colors
     curses.start_color()
     curses.use_default_colors()
+   # curses.init_pair(0,curses.COLOR_BLACK,-1)
     curses.init_pair(1, curses.COLOR_GREEN, -1)   # AI Tag
     curses.init_pair(2, curses.COLOR_RED, -1)     # User Tag
     curses.init_pair(3, curses.COLOR_YELLOW, -1)  # Tool Responses / System
@@ -419,7 +384,6 @@ def main(stdscr):
     curses.init_pair(5, curses.COLOR_RED, -1)     # Errors
     curses.init_pair(6,curses.COLOR_BLUE,-1)
     curses.init_pair(7,curses.COLOR_MAGENTA,-1)
-    
     # OpenAI Client
     client = openai.OpenAI(
         base_url=URL,
@@ -430,6 +394,7 @@ def main(stdscr):
     noExit = True
     conversation_history = []
     try:
+    
         with open(HIST_FILE, 'r') as fp:
             conversation_history = json.load(fp)
     except Exception:
@@ -445,7 +410,9 @@ def main(stdscr):
     speech_queue.append(STARTING_MESSAGE)
 
     while noExit:
+        #vd.allow_listening()
         construct_system_prompt()
+        #print(SYSTEM_PROMPT)
         if(history_enable):
             if len(conversation_history) > 10:
                 conversation_history = conversation_history[2:]
@@ -516,17 +483,14 @@ def main(stdscr):
         streaming_ui_text = ""
        
         try:
+            
+           # vd.forbid_listening()
             stream = client.chat.completions.create(
+                #model="meta-llama-3.1-8b-instruct",
                 model=MODEL,
                 temperature=TEMPERATURE,
                 messages=messages_for_api,
                 stream=True
-                ,
-                extra_body={
-                    "reasoning_effort": "none"  # disable reasoning
-                }
-                    
-
             )
 
             tool_response = False
@@ -540,11 +504,10 @@ def main(stdscr):
             language=""
             lang_detection=False
             lang_detected=False
-            waiting_sign='⣾⣽⣻⢿⡿⣟⣯⣷'
-            counter=0
             for chunk in stream:
-             
+                
                 delta = chunk.choices[0].delta
+                
                 if delta.content is not None:
                     content = delta.content
                     full_reply += content
@@ -583,6 +546,7 @@ def main(stdscr):
                             if lang_detected:
                                 streaming_ui_text += char
                         else:
+
                             if char == '{': 
                                 bracket_counter += 1
                                 is_calling_tool = True
@@ -619,14 +583,14 @@ def main(stdscr):
                                         streaming_ui_text += '|'+char
                                         voice_reply += '|'+char
                                         continue
-                    dots_count = counter % (len(waiting_sign)*2)
-                    dots = waiting_sign[int(dots_count/2)]
-                    counter+=1
-                    if counter>=len(waiting_sign)*2:
-                        counter=0
+                                
+                                
+                            
+                            
+
                     redraw(stdscr, chat_log, "", streaming_text=streaming_ui_text.strip(), 
-                           is_calling_tool=is_calling_tool,thinking=thinking, ai_name=AI_NAME,input_tag=f"Answering {dots}",input_color=1)
-                   
+                           is_calling_tool=is_calling_tool,thinking=thinking, ai_name=AI_NAME)
+
             if streaming_ui_text.strip():
                 chat_log.append({"tag": f"[{AI_NAME}]:", "tag_color": 1, "content": f"\n{streaming_ui_text.strip()}\n", "content_color": 0})
             
@@ -656,9 +620,11 @@ def main(stdscr):
                             args = {}
 
                     tool = TOOL_MAP.get(tool_name)
+                    
                     if tool:
                         try:
                             response = tool["function"](args)
+                            
                             chat_log.append({"tag": "[System]: ", "tag_color": 3, "content": f"Tool {tool_name} called\n", "content_color": 3})
                             redraw(stdscr, chat_log, "", ai_name=AI_NAME)
                             voice_reply += f"\nTool {tool_name} called\n"
@@ -673,6 +639,9 @@ def main(stdscr):
                             chat_log.append({"tag": "", "tag_color": 0, "content": f"[Tool Error: {e}]\n", "content_color": 5})
                             response = None
 
+                #if tool_response:
+                 #   tool_temp_hist.append({"role": "user", "content": "continue based on the 'instruction' field of all recent tool responses(which is in json) and initial request before recent tool calls."})#report me result of all recent tool responses in plain text(not json) and in your language. continue your message or call more tools if initial request is not fulfilled yet and in this case do not ask for permission for further tool calls."})
+     
             if voice and voice_reply.strip():
                 speech_queue.append(voice_reply.strip().replace("*",""))
 
@@ -684,9 +653,11 @@ def main(stdscr):
 if __name__ == "__main__":
     run_speaker()
     vd.run_voice_detector()
+    
     try:
         curses.wrapper(main)
     finally:
+
         stop_speaker()
         vd.stop_voice_detector()
         kill_tools()

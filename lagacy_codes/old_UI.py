@@ -1,4 +1,4 @@
-###MechaDiagrammer Awakened...
+###Agent Areon Awakened...
 
 import openai
 from colorama import *
@@ -10,7 +10,7 @@ from system_prompt import *
 from speaker import* 
 import voice_detector as vd
 
-AI_NAME="MechaDiagrammer"
+AI_NAME="Agent Areon"
 SYNC_INSTRUCTIONS="sync_instructions.json"
 
 SYSTEM_PROMPT =""

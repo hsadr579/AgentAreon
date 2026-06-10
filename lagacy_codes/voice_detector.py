@@ -12,10 +12,10 @@ import random
 CONFIG_FILE="config.json"
 INITIAL_SUSPENSE_TIME=4
 SUSPENSE_TIME=1
-THE_NAME="MechaDiagrammer"
+THE_NAME="Agent Areon"
 STOP_NAME="dismissed"
 SYNC_INSTRUCTIONS="sync_instructions.json"
-RESPONSE_MSG=["At your service","my lord","MechaDiagrammer Listening"]
+RESPONSE_MSG=["At your service","my lord","Agent Areon Listening"]
 VOICE_OFF_MSG=["I shall take my leave"]
 
 try:

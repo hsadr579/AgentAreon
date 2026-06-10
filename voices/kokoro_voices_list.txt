@@ -1,27 +1,27 @@
 af_alloy
 af_aoede
-af_bella -> good 2
-af_heart -> good enough 1
-af_jessica -> good 3
-af_kore -> bad
-af_nicole -> wispher like
-af_nova -> not bad 5
-af_river -> hammer like
-af_sarah -> sharp and good 4
-af_sky -> not bad 6
+af_bella
+af_heart 
+af_jessica 
+af_kore 
+af_nicole 
+af_nova 
+af_river 
+af_sarah 
+af_sky 
 
-am_adam -> not good really
-am_echo -> good
-am_eric -> so so
-am_fenrir -> bad
-am_liam -> no
-am_michael -> bad
-am_onyx -> gang
-am_puck -> best
+am_adam 
+am_echo
+am_eric 
+am_fenrir 
+am_liam 
+am_michael 
+am_onyx
+am_puck 
 
-bf_alice -> not good
-bf_emma -> bad
-bf_isabella -> good
+bf_alice
+bf_emma 
+bf_isabella 
 bf_lily
 
 bm_daniel

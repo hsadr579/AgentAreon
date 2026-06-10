@@ -59,7 +59,7 @@ PROCEDURES_FILE="procedures.json"
 SYNC_INSTRUCTIONS="sync_instructions.json"
 procedures={}
 procedures_names=[]
-def init():
+def init(args):
     global procedures
     try:
         fp=open(PROCEDURES_FILE,'r')

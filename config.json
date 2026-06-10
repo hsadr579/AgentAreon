@@ -3,26 +3,31 @@
     "api_key": "lm-studio",
     "model": "Gemma-4-E4B-Uncensored-HauhauCS-Aggressive-IQ4_NL",
     "temperature": 0.3,
-    "ai_name": "MechaDiagrammer",
+    "ai_name": "Agent Areon",
     "user_name": "User",
     "user_sysprompt": "you should not introduce yourself unless I ask you to.",
-    "voice_summoning_word": "MechaDiagrammer",
+    "voice_summoning_word": "Areon",
     "voice_stopping_word": "sleep now",
     "voice_summoning_answers": [
         "At your service",
-        "MechaDiagrammer Listening"
+        "Areon Listening"
     ],
     "voice_max_silence_gap": 0.45,
     "voice_max_seg_length": 10,
     "voice_listen_during_speak": true,
     "TTS_voice": "christopher",
     "music_player": {
-        "music_path": "C:\\Users\\ASUS\\Music\\MechaDiagrammer_musics\\",
+        "music_path": "C:\\Users\\ASUS\\Music\\Agent Areon_musics\\",
+        "internal_player": true,
         "prefixes": [
             "mp3",
             "ogg",
             "mp4",
-            "wav"
+            "wav",
+            "flac",
+            "m4a",
+            "aac",
+            "wma"
         ]
     }
 }

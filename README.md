@@ -1,10 +1,9 @@
-# MechaDiagrammer
-A fully local AI assistant with wake-word activation, voice interaction, tool calling, terminal UI, and customizable personalities. Powered by local LLMs, Whisper speech recognition, and Kokoro TTS.
+# Agent Areon
+Your fully local Jarvis-like AI assistant with wake-word activation, voice interaction, tool calling, terminal UI, internal music player, and customizable personalities. Powered by local LLMs, Whisper speech recognition, and Kokoro TTS.
 
-![test](img/image1.png)
-![test](img/image2.png)
+![AI assistant terminal user interface(TUI)](img/image1.png)
 
-mechaDiagrammer is a local AI assistant built in Python that supports:
+Agent Areon is a local AI assistant built in Python that supports:
 
 * Local LLM endpoints (LM Studio / OpenAI-compatible APIs)
 * Voice activation + speech control
@@ -19,8 +18,8 @@ mechaDiagrammer is a local AI assistant built in Python that supports:
 ## 1. Clone the repository
 
 ```bash
-git clone https://github.com/hsadr579/MechaDiagrammer.git
-cd mechaDiagrammer
+git clone https://github.com/hsadr579/AgentAreon.git
+cd AgentAreon
 ```
 
 ---
@@ -78,20 +77,21 @@ The project is configured via `config.json`.
     "api_key": "lm-studio",
     "model": "Gemma-4-E4B-Uncensored-HauhauCS-Aggressive-IQ4_NL",
     "temperature": 0.3,
-    "ai_name": "MechaDiagrammer",
+    "ai_name": "Agent Areon",
     "user_name": "User",
     "user_sysprompt": "you should not introduce yourself unless I ask you to.",
-    "voice_summoning_word": "MechaDiagrammer",
+    "voice_summoning_word": "Areon",
     "voice_stopping_word": "sleep now",
     "voice_summoning_answers": [
         "At your service",
-        "MechaDiagrammer Listening"
+        "Agent Areon Listening"
     ],
     "voice_max_silence_gap": 0.45,
     "voice_max_seg_length": 10,
     "voice_listen_during_speak": true,
     "TTS_voice": "christopher",
     "music_player": {
+        "internal_player":true,
         "music_path": "Path to music folder",
         "prefixes": [
             "mp3",
@@ -128,7 +128,7 @@ The project is configured via `config.json`.
 
 ### Voice Control
 
-* `voice_summoning_word` → Wake word (e.g. "MechaDiagrammer")
+* `voice_summoning_word` → Wake word (e.g. "Areon")
 * `voice_stopping_word` → Stop listening command
 * `voice_summoning_answers` → Random responses when activated
 * `voice_max_silence_gap` → Max silence before stopping input (seconds)
@@ -148,7 +148,7 @@ The project is configured via `config.json`.
 ---
 ## Code Colorizer (languages.json)
 
-mechaDiagrammer includes a built-in syntax colorizer that highlights code based on rules defined in `languages.json`.
+Agent Areon includes a built-in syntax colorizer that highlights code based on rules defined in `languages.json`.
 
 This system is lightweight and fully configurable — you can add or modify languages easily without changing the core code.
 
@@ -338,7 +338,7 @@ Just add another entry:
 
 # Tool System (Plugins)
 
-mechaDiagrammer supports a modular tool system.
+Agent Areon supports a modular tool system.
 
 ## Structure
 
@@ -431,7 +431,7 @@ python main.py
 
 ## Internal Commands
 
-mechaDiagrammer supports built-in console commands for controlling runtime behavior.
+Agent Areon supports built-in console commands for controlling runtime behavior.
 All commands start with a backslash `\`.
 
 ### Usage format

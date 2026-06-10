@@ -1,12 +1,13 @@
 colorama==0.4.6
 cryptography==41.0.5
 kokoro==0.9.4
+mutagen==1.47.0
 numpy==2.4.6
-openai==2.38.0
+openai==2.41.0
 openai_whisper==20250625
 piper_tts==1.4.2
+pygame==2.6.1
 pyttsx3==2.91
+sentence_transformers==5.5.1
 sounddevice==0.4.7
-torch==2.6.0+cu124
-transformers==5.9.0
 webrtcvad_wheels==2.0.14

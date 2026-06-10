@@ -19,7 +19,7 @@ import speaker_v3 as speaker
 CONFIG_FILE        = "config.json"
 SYNC_INSTRUCTIONS  = "sync_instructions.json"
 
-THE_NAME   = "MechaDiagrammer"
+THE_NAME   = "Agent Areon"
 STOP_NAME  = "sleep now"
 
 # How many consecutive speech frames before we start recording
@@ -35,7 +35,8 @@ LISTEN_DURING_SPEAK=True
 
 RESPONSE_MSG = [
     "At your service",
-    "MechaDiagrammer listening",
+    "My lord",
+    "Agent Areon listening",
 ]
 
 VOICE_OFF_MSG = [
@@ -97,7 +98,7 @@ ECHO_COOLDOWN_SEC          = 0.40    # seconds to ignore audio after TTS stops
 # WHISPER
 # ─────────────────────────────────────────
 
-model = whisper.load_model("base")
+model = whisper.load_model("models/base.pt")
 
 
 # ─────────────────────────────────────────

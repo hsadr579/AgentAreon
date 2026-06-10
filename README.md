@@ -407,7 +407,7 @@ def add_tool(tool_dict):
 
 ## Example: music_player Tool
 
-Your existing `music_player` tool:
+Existing `music_player` tool:
 
 * Scans local folder for music files
 * Supports:
@@ -424,8 +424,6 @@ Your existing `music_player` tool:
 ```bash
 python main.py
 ```
-
-(Or your actual entry file.)
 
 ---
 

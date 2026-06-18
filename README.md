@@ -440,7 +440,7 @@ All commands start with a backslash `\`.
 
 ---
 
-## ⚙️ Available Commands
+## Available Commands
 
 ### Exit program
 
